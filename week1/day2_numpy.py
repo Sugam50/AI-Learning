@@ -28,3 +28,8 @@ b = np.array([[1.0],
               [4.0]])
 
 print(a + c)
+
+
+print(np.mean(a)) # 5.5
+print(np.std(a)) # 3.452052529534663
+print(np.var(a)) # 11.916666666666666
