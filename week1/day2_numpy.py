@@ -31,5 +31,19 @@ print(a + c)
 
 
 print(np.mean(a)) # 5.5
-print(np.std(a)) # 3.452052529534663
+sum = 0;
+for i in a:
+    sum += i
+mean = sum / len(a);
+print(mean); # mean
+
 print(np.var(a)) # 11.916666666666666
+sum = 0;
+for i in a:
+    sum += (i - mean) ** 2
+print(sum / len(a)); # variance
+variance = sum / len(a);
+print(variance)
+
+print(np.std(a)) # 3.452052529534663
+standard_deviation = math.sqrt(variance);
