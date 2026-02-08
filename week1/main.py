@@ -8,7 +8,7 @@ app = FastAPI()
 class Tasks(BaseModel):
     title: str
     description: str
-    completed: bool
+    completed: bool = False
 
 class updateTask(BaseModel):
     title: Optional[str] = None
@@ -18,17 +18,17 @@ class updateTask(BaseModel):
 class AdditionalHeaders(BaseModel):
     x_token: Optional[str] = None
     x_key: Optional[str] = None
-    authorisation: Optional[str] = None,
+    authorization: Optional[str] = None,
 
 def get_additional_headers(
     x_token: Optional[str] = Header(default=None),
     x_key: Optional[str] = Header(default=None),
-    authorisation: Optional[str] = Header(default=None),
+    authorization: Optional[str] = Header(default=None),
 ) -> AdditionalHeaders:
     return AdditionalHeaders(
         x_token=x_token,
         x_key=x_key,
-        authorisation=authorisation
+        authorization=authorization
     )
 
 tasks = {
