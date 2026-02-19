@@ -1,0 +1,8 @@
+Q) Write 3-sentence explanation of backprop for interviews
+Ans)  Backpropagation refers to reverse training of data line using the output and errors to change the weights and biases from output layer to input layer
+
+Updated Ans)
+
+Backpropagation is the process used to compute gradients of the loss with respect to each weight in a neural network.
+It works by propagating the error backward from the output layer to earlier layers using the chain rule of calculus.
+These gradients are then used by optimization algorithms like gradient descent to update weights and reduce the loss.
