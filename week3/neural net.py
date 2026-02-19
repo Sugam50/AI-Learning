@@ -1,0 +1,113 @@
+import numpy as np
+from matplotlib import pyplot as plt
+import pandas as pd 
+
+data = pd.read_csv('/kaggle/input/digit-recognizer/train.csv')
+
+data = np.array(data)
+m,n = data.shape
+np.random.shuffle(data)
+
+data_dev = data[0:1000].T
+Y_dev = data_dev[0]
+X_dev = data_dev[1:n]
+
+data_train = data[1000:m].T
+
+Y_train = data_train[0];
+X_train = data_train[1:n];
+X_train = X_train / 255.
+X_dev = X_dev / 255.
+
+print(m) # rows- 42000
+print(n) # columns - 785
+
+def init_params():
+    W1 = np.random.randn(64, 784) * np.sqrt(2/784)
+    B1 = np.zeros((64,1))
+    W2 = np.random.randn(10, 64) * np.sqrt(2/64)
+    B2 = np.zeros((10,1))
+    return W1, W2, B1,B2
+
+def reLu(Z):
+    return np.maximum(0, Z);
+
+def softMax(Z):
+    expZ = np.exp(Z - np.max(Z, axis=0, keepdims=True))
+    return expZ / np.sum(expZ, axis=0, keepdims=True)
+
+def forward_prop(W1,W2, B1,B2, X):
+    Z1 = W1.dot(X) + B1;
+    A1 = reLu(Z1)
+    Z2 = W2.dot(A1) + B2;
+    A2 = softMax(Z2)
+    return Z1, A1, Z2,A2
+
+def one_hot(Y):
+    oneHot = np.zeros((Y.size, 10))
+    oneHot[np.arange(Y.size), Y] = 1
+    oneHotY = oneHot.T
+    return oneHotY;
+    
+def deriv_reLu(Z):
+    return Z>0;
+
+def backward_prop(Z1, A1, Z2,A2, W2, X, Y):
+    m = Y.size
+    oneHotY = one_hot(Y);
+
+    dz2 = A2-oneHotY
+    dw2 = 1/m * dz2.dot(A1.T)
+    db2 = (1/m) * np.sum(dz2, axis=1, keepdims=True)
+    # db2 = 1/m*np.sum(dz2)
+    dz1 = W2.T.dot(dz2) * deriv_reLu(Z1)
+    dw1 = (1/m )* dz1.dot(X.T)
+    db1 = (1/m) * np.sum(dz1, axis=1, keepdims=True)
+    # db1 = 1/m*np.sum(dz1)
+    return dw1, db1, dw2,db2
+
+def update_params(W1, B1, W2, B2, dw1, db1, dw2,db2, alpha):
+    W1 = W1 - alpha * dw1;
+    B1 = B1 - alpha * db1;
+    W2 = W2 - alpha * dw2;
+    B2 = B2 - alpha * db2;
+    return W1, B1, W2, B2
+
+def get_predictions(A2):
+    return np.argmax(A2, 0)
+
+def get_accuracy(predictions, Y):
+    return np.sum(predictions == Y)/ Y.size
+
+def gradient_descent(X,Y,iteration, alpha):
+    W1, W2, B1, B2 = init_params()
+    for i in range(iteration):
+        Z1, A1, Z2, A2 = forward_prop(W1,W2, B1,B2, X)
+        dw1, db1, dw2,db2  = backward_prop(Z1, A1, Z2, A2, W2, X, Y)
+        W1, B1, W2, B2 = update_params(W1, B1, W2, B2, dw1, db1, dw2,db2, alpha)
+        if(i%50==0):
+            print("iteration", i);
+            print("accuracy", get_accuracy(get_predictions(A2), Y))
+    return W1, W2, B1, B2
+
+
+
+
+
+W1, W2, B1, B2 = gradient_descent(X_train, Y_train, 500, 0.05)
+
+def make_pred(X, W1, B1, W2, B2):
+    _, _, _, A2 = forward_prop(W1,W2, B1,B2, X) 
+    predictions = get_predictions(A2) 
+    return predictions 
+    
+def test_pred(index, W1, B1, W2, B2): 
+    current_image = X_train[:,index, None] 
+    predictions = make_pred(current_image, W1, B1, W2, B2); 
+    label = Y_train[index] 
+    current_image = current_image.reshape((28,28))*255 
+    plt.gray() 
+    plt.imshow(current_image) 
+    plt.show() 
+    
+test_pred(2, W1, B1, W2, B2)
