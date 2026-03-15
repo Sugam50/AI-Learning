@@ -6,3 +6,4 @@ Updated Ans)
 Backpropagation is the process used to compute gradients of the loss with respect to each weight in a neural network.
 It works by propagating the error backward from the output layer to earlier layers using the chain rule of calculus.
 These gradients are then used by optimization algorithms like gradient descent to update weights and reduce the loss.
+
